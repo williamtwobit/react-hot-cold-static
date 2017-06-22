@@ -23,8 +23,8 @@ export default class Game extends React.Component{
             guesses:[],
             correctAnswer:'3',
             feedback:'Make your guess!',
+            guessButton:true,
             poodle:false, //This is the modal for the what?
-            test: 'not working'
         };
     };
 
@@ -36,38 +36,41 @@ export default class Game extends React.Component{
             poodle:false
         });
     };
+    submitGuess(userGuess){
+        let feedback;
 
-    // submitGuess(userGuess){
-    //     let feedback;
+        this.setState({
+            guesses:[...this.state.guesses, userGuess]
+        });
 
-    //     this.setState({
-    //         guesses:[...this.state.guesses, userGuess]
-    //     });
+        let submittedGuess=userGuess-this.state.correctAnswer;
 
-    //     let submittedGuess=userGuess-correctAnswer;
-
-    //     if(userGuess===correctAnswer){
-    //         feedback="You Won. Click new game to play again";
-    //         return winner();
-    //     }
-    //     else if(submittedGuess<10){
-    //         feedback="Hot";
-    //     }
-    //     else if(submittedGuess<20){
-    //         feedback="Kinda hot";
-    //     }
-    //     else if(submittedGuess<30){
-    //         feedback="Less than warm";
-    //     }
-    //     else if(submittedGuess<40){
-    //         feedback="Cold";
-    //     }
-
-    //     this.setState({
-    //         feedback
-    //     });
-    // };
-
+        if(userGuess===this.state.correctAnswer){
+            return this.winner;
+        }
+        else if(submittedGuess<10){
+            feedback="Hot";
+        }
+        else if(submittedGuess<20){
+            feedback="Kinda hot";
+        }
+        else if(submittedGuess<30){
+            feedback="Less than warm";
+        }
+        else if(submittedGuess<40){
+            feedback="Cold";
+        }
+        this.setState({
+            feedback
+        });
+    };
+    winner(){
+        let feedback;
+        this.setState({
+            feedback:"You Won. Click new game to play again",
+            guessButton: false
+        });
+    }
     poodle(id){
 
         if(id === 'what'){
@@ -86,7 +89,7 @@ export default class Game extends React.Component{
         return (
             <div>
                 <Header state={this.state} poodle={id=> this.poodle(id)} newGame={e=> this.newGame()}/>
-                <GuessSection feedback={this.state.feedback} />
+                <GuessSection feedback={this.state.feedback} submitGuess={guess=>this.submitGuess(guess)}/>
                 <GuessCount count={3} />
                 <GuessList guesses={this.state.guesses} />
             </div>
