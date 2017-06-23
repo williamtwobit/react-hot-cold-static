@@ -21,7 +21,7 @@ export default class Game extends React.Component{
         super(props);
         this.state={
             guesses:[],
-            correctAnswer:'3',
+            correctAnswer: Math.floor((Math.random() * 100) + 1),
             feedback:'Make your guess!',
             guessButton:true,
             poodle:false, //This is the modal for the what?
@@ -31,22 +31,30 @@ export default class Game extends React.Component{
     newGame(){
         this.setState({
             guesses:[],
-            correctAnswer:'5',
+            correctAnswer: Math.floor((Math.random() * 100) + 1),
             feedback:'New Game! Make your guess!',
-            poodle:false
+            poodle:false,
+            guessButton:true
         });
     };
+
     submitGuess(userGuess){
         let feedback;
-
+        if(this.state.guesses.includes(userGuess)){
+            feedback= "You've already entered that guess..."
+            this.setState({
+                feedback
+            });
+            return;
+        }
         this.setState({
             guesses:[...this.state.guesses, userGuess]
         });
 
-        let submittedGuess=userGuess-this.state.correctAnswer;
+        let submittedGuess= Math.abs(userGuess-this.state.correctAnswer);
 
-        if(userGuess===this.state.correctAnswer){
-            return this.winner;
+        if(userGuess == this.state.correctAnswer){
+            return this.winner();
         }
         else if(submittedGuess<10){
             feedback="Hot";
@@ -60,17 +68,21 @@ export default class Game extends React.Component{
         else if(submittedGuess<40){
             feedback="Cold";
         }
+        else{
+            feedback="Ice cold, baby... ice cold."
+        }
         this.setState({
             feedback
         });
     };
+
     winner(){
-        let feedback;
         this.setState({
-            feedback:"You Won. Click new game to play again",
+            feedback: "You Won. Click new game to play again",
             guessButton: false
         });
-    }
+    };
+
     poodle(id){
 
         if(id === 'what'){
@@ -89,8 +101,8 @@ export default class Game extends React.Component{
         return (
             <div>
                 <Header state={this.state} poodle={id=> this.poodle(id)} newGame={e=> this.newGame()}/>
-                <GuessSection feedback={this.state.feedback} submitGuess={guess=>this.submitGuess(guess)}/>
-                <GuessCount count={3} />
+                <GuessSection feedback={this.state.feedback} submitGuess={guess=>this.submitGuess(guess)} state={this.state}/>
+                <GuessCount count={this.state.guesses.length} />
                 <GuessList guesses={this.state.guesses} />
             </div>
         );
